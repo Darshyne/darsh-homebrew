@@ -196,6 +196,7 @@ export class Creator extends ApplicationV2 {
       ? `<div class="dhb-error"><strong>${escape(loc("Automatisation.Erreurs"))}</strong><ul>${problems.map(p => `<li>${escape(p)}</li>`).join("")}</ul></div>`
       : `<p class="dhb-ok"><i class="fa-solid fa-check"></i> ${escape(loc(Object.keys(entry).length ? "Automatisation.Valide" : "Automatisation.Vide"))}</p>`;
     return `<h3>${escape(loc("Automatisation.Titre", { name: s.name }))}</h3>
+      ${engine.contentApplies() ? "" : `<p class="dhb-warn">${escape(loc("Automatisation.NiveauInsuffisant"))}</p>`}
       ${item ? "" : `<p class="dhb-warn">${escape(loc("Natif.Introuvable"))}</p>`}
       ${base}
       ${blocks || `<p class="dhb-hint">${escape(loc("Automatisation.Aucune"))}</p>`}

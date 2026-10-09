@@ -43,3 +43,12 @@ export function takenElsewhere(identifier, source) {
 export function register(source, table) {
   return content()?.register(source, table) ?? null;
 }
+
+/**
+ * Le niveau d'automatisation du moteur applique-t-il le contenu (niveau Intégral, §117 du moteur) ? Au-dessous, les créations
+ * sont enregistrées mais sans effet. Un moteur sans niveaux (avant 0.202.0) : oui.
+ */
+export function contentApplies() {
+  const api = game.modules.get(ENGINE_ID)?.api;
+  return typeof api?.levelAtLeast === "function" ? api.levelAtLeast("full") : true;
+}

@@ -6,6 +6,7 @@
   "DHB.Automatisation.Erreurs": "À corriger avant d'enregistrer :",
   "DHB.Automatisation.Inconnue": "Automatisation « {type} » inconnue de cette version du moteur : elle sera ignorée.",
   "DHB.Automatisation.Json": "Ce que reçoit le moteur",
+  "DHB.Automatisation.NiveauInsuffisant": "Le niveau d'automatisation du moteur n'est pas « Intégral » : vos créations sont enregistrées mais ne s'appliquent pas en jeu (réglages de DAS · Core).",
   "DHB.Automatisation.PasEnregistre": "L'automatisation a des erreurs : rien n'est enregistré.",
   "DHB.Automatisation.Probleme": "{where} : {message}",
   "DHB.Automatisation.Retirer": "Retirer",

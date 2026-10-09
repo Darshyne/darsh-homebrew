@@ -6,6 +6,7 @@
   "DHB.Automatisation.Erreurs": "Fix before saving:",
   "DHB.Automatisation.Inconnue": "Automation \"{type}\" is unknown to this version of the engine: it will be ignored.",
   "DHB.Automatisation.Json": "What the engine receives",
+  "DHB.Automatisation.NiveauInsuffisant": "The engine's automation level is not \"Full\": your creations are saved but do not apply in game (DAS · Core settings).",
   "DHB.Automatisation.PasEnregistre": "The automation has errors: nothing was saved.",
   "DHB.Automatisation.Probleme": "{where}: {message}",
   "DHB.Automatisation.Retirer": "Remove",
