@@ -1,0 +1,36 @@
+import { describe, it, expect } from "vitest";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+const ROOT = join(import.meta.dirname, "../module");
+const scripts = dir => readdirSync(dir, { withFileTypes: true })
+  .flatMap(e => e.isDirectory() ? scripts(join(dir, e.name)) : (e.name.endsWith(".mjs") ? [join(dir, e.name)] : []));
+
+/** Les clés `DHB.*` que le code demande : littérales, et les familles construites (`Etape.${…}`, `Nature.${…}`) dépliées. */
+function usedKeys() {
+  const keys = new Set();
+  for ( const file of scripts(join(ROOT, "scripts")) ) {
+    const src = readFileSync(file, "utf8");
+    for ( const [, k] of src.matchAll(/\bloc\("([A-Za-z.]+)"/g) ) keys.add(`DHB.${k}`);
+    for ( const [, k] of src.matchAll(/loc\(\s*([A-Za-z]+\s*\?\s*)?"([A-Z][A-Za-z.]+)"\s*:\s*"([A-Z][A-Za-z.]+)"/g) ) { keys.add(`DHB.${k}`); }
+  }
+  for ( const step of ["start", "nature", "identity", "native", "automation"] ) keys.add(`DHB.Etape.${step}`);
+  for ( const n of ["spell", "classFeature", "speciesTrait", "feat", "monsterFeature", "weapon", "equipment", "consumable"] ) keys.add(`DHB.Nature.${n}`);
+  for ( const k of ["Automatisation.Valide", "Automatisation.Vide"] ) keys.add(`DHB.${k}`);
+  return keys;
+}
+
+describe("fichiers de langue", () => {
+  for ( const lang of ["fr", "en"] ) {
+    it(`${lang} : chaque clé demandée existe`, () => {
+      const json = JSON.parse(readFileSync(join(ROOT, `lang/${lang}.json`), "utf8"));
+      expect(Array.from(usedKeys()).filter(k => !(k in json))).toEqual([]);
+    });
+  }
+
+  it("fr et en ont les mêmes clés", () => {
+    const fr = Object.keys(JSON.parse(readFileSync(join(ROOT, "lang/fr.json"), "utf8"))).sort();
+    const en = Object.keys(JSON.parse(readFileSync(join(ROOT, "lang/en.json"), "utf8"))).sort();
+    expect(fr).toEqual(en);
+  });
+});

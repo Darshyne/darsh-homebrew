@@ -1,0 +1,56 @@
+/* DAS · Homebrew — créateur. Couleurs reprises des variables du cœur V14, pour suivre le thème clair ou sombre. */
+.dhb-creator .window-content { padding: 0; }
+.dhb-body { display: flex; flex-direction: column; height: 100%; }
+.dhb-step { flex: 1; overflow-y: auto; padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.dhb-step h3 { margin: 0; border-bottom: 1px solid var(--color-border, #7a7971); }
+
+.dhb-steps { display: flex; gap: 0.25rem; margin: 0; padding: 0.5rem 1rem; list-style: none; border-bottom: 1px solid var(--color-border, #7a7971); }
+.dhb-steps li { flex: 1; text-align: center; padding: 0.2rem; border-radius: 4px; opacity: 0.6; font-size: var(--font-size-12, 12px); }
+.dhb-steps li.active { opacity: 1; font-weight: bold; background: var(--color-warm-2, rgba(255, 100, 0, 0.15)); }
+
+.dhb-footer { display: flex; gap: 0.5rem; justify-content: flex-end; padding: 0.5rem 1rem; border-top: 1px solid var(--color-border, #7a7971); }
+.dhb-footer button { flex: 0 0 auto; width: auto; }
+
+.dhb-drop { border: 2px dashed var(--color-border, #7a7971); border-radius: 6px; padding: 2rem 1rem; text-align: center; }
+.dhb-source { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border: 1px solid var(--color-border, #7a7971); border-radius: 6px; }
+.dhb-source .dhb-icon { margin-left: auto; }
+
+.dhb-natures { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+.dhb-nature { display: flex; align-items: center; gap: 0.4rem; }
+
+.dhb-field { display: flex; flex-direction: column; gap: 0.2rem; }
+.dhb-field.dhb-kind-boolean { flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 0.4rem; }
+.dhb-label { font-weight: bold; font-size: var(--font-size-12, 12px); }
+.dhb-hint { margin: 0; opacity: 0.75; font-size: var(--font-size-12, 12px); }
+.dhb-img { display: flex; align-items: center; gap: 0.4rem; }
+.dhb-img img { width: 36px; height: 36px; border: none; object-fit: contain; }
+
+.dhb-recipe { border: 1px solid var(--color-border, #7a7971); border-radius: 6px; padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.dhb-recipe header { display: flex; align-items: center; }
+.dhb-recipe h4 { margin: 0; flex: 1; }
+.dhb-icon { flex: 0 0 auto; width: auto; padding: 0 0.4rem; }
+
+.dhb-multi { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
+.dhb-multi label { display: flex; align-items: center; gap: 0.25rem; }
+
+.dhb-condition { display: flex; flex-direction: column; gap: 0.3rem; }
+.dhb-clause { display: flex; align-items: center; gap: 0.3rem; }
+.dhb-clause select:not([multiple]) { flex: 1; }
+.dhb-clause input[type="number"] { width: 4.5rem; flex: 0 0 auto; }
+.dhb-clause select[multiple] { height: 5rem; flex: 1; }
+.dhb-not { display: flex; align-items: center; gap: 0.2rem; flex: 0 0 auto; }
+.dhb-condition > button { align-self: flex-start; width: auto; }
+
+.dhb-add .dhb-group { margin: 0.4rem 0; }
+.dhb-add h5 { margin: 0 0 0.2rem; }
+.dhb-add button { width: auto; margin: 0 0.25rem 0.25rem 0; }
+
+.dhb-base { border-left: 3px solid var(--color-border-highlight, #ff6400); padding-left: 0.5rem; }
+.dhb-step pre { max-height: 14rem; overflow: auto; font-size: 11px; white-space: pre-wrap; }
+
+.dhb-error { color: var(--color-level-error, #c33); }
+.dhb-error ul { margin: 0.2rem 0 0; }
+.dhb-warn { color: var(--color-level-warning, #c90); }
+.dhb-ok { color: var(--color-level-success, #393); margin: 0; }
+
+.directory .header-actions .dhb-open { flex: 0 0 100%; }
