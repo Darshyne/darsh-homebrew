@@ -15,7 +15,7 @@ import { creationOf } from "../adapter/store.mjs";
 import { homebrewPack, createPack } from "../adapter/compendium.mjs";
 import { NATURES, identityProblems, createCreation, preview, saveAutomation } from "../runtime/workshop.mjs";
 import * as engine from "../adapter/engine.mjs";
-import { recipeBlock, catalogue } from "./automation-form.mjs";
+import { recipeBlock, catalogue, describeIssue } from "./automation-form.mjs";
 
 const { ApplicationV2 } = foundry.applications.api;
 
@@ -190,7 +190,8 @@ export class Creator extends ApplicationV2 {
         <label><input type="checkbox" data-state="keepBase" ${s.keepBase ? "checked" : ""}> ${escape(loc("Automatisation.Base", { keys: Object.keys(s.base).join(", ") }))}</label>
         <details><summary>${escape(loc("Automatisation.Voir"))}</summary><pre>${escape(JSON.stringify(s.base, null, 2))}</pre></details>
       </section>` : "";
-    const { entry, problems } = preview(s.identifier, s);
+    const { entry, issues, invalid } = preview(s.identifier, s);
+    const problems = [...issues.map(describeIssue), ...invalid];
     const verdict = problems.length
       ? `<div class="dhb-error"><strong>${escape(loc("Automatisation.Erreurs"))}</strong><ul>${problems.map(p => `<li>${escape(p)}</li>`).join("")}</ul></div>`
       : `<p class="dhb-ok"><i class="fa-solid fa-check"></i> ${escape(loc(Object.keys(entry).length ? "Automatisation.Valide" : "Automatisation.Vide"))}</p>`;

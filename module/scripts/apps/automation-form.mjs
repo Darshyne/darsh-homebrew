@@ -193,3 +193,18 @@ export function catalogue(recipes, used) {
     }).join("")}
   </div>`).join("");
 }
+
+/**
+ * Un problème de construction (`issues` de `api.content.recipes.build`) dit dans la langue du client : « Recette — Champ :
+ * message ». Le message vient des libellés du moteur (`DND5ECOMBAT.Recette.Erreur.<code>`), le champ de `Recette.Champ`.
+ */
+export function describeIssue(issue) {
+  const recipe = issue.type ? engineLoc(`Recette.${issue.type}.Nom`) : null;
+  const fieldKey = String(issue.at ?? "").split("[")[0];
+  const field = (fieldKey && (fieldKey !== "type") && game.i18n.has(`DND5ECOMBAT.Recette.Champ.${fieldKey}`))
+    ? engineLoc(`Recette.Champ.${fieldKey}`) : null;
+  const key = `DND5ECOMBAT.Recette.Erreur.${issue.code}`;
+  const message = game.i18n.has(key) ? game.i18n.format(key, issue.data ?? {}) : (issue.message ?? issue.code);
+  const where = [recipe && (recipe !== `DND5ECOMBAT.Recette.${issue.type}.Nom`) ? recipe : null, field].filter(Boolean).join(" — ");
+  return where ? loc("Automatisation.Probleme", { where, message }) : message;
+}

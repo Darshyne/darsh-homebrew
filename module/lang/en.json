@@ -7,6 +7,7 @@
   "DHB.Automatisation.Inconnue": "Automation \"{type}\" is unknown to this version of the engine: it will be ignored.",
   "DHB.Automatisation.Json": "What the engine receives",
   "DHB.Automatisation.PasEnregistre": "The automation has errors: nothing was saved.",
+  "DHB.Automatisation.Probleme": "{where}: {message}",
   "DHB.Automatisation.Retirer": "Remove",
   "DHB.Automatisation.RienARegler": "Nothing to set.",
   "DHB.Automatisation.Titre": "Automation of {name}",

@@ -1,8 +1,8 @@
 {
   "id": "darsh-homebrew",
   "title": "DAS · Homebrew",
-  "description": "Créateur d'objets automatisés pour la suite DAS : sorts, aptitudes, objets magiques et capacités de monstres, composés pas à pas à partir des briques du moteur, sans code.",
-  "version": "0.1.0",
+  "description": "Step-by-step creator of automated items for Darshyne's Automation Suite (DAS): spells, features, magic items and monster features, built from the dnd5e-combat engine's building blocks, without code.",
+  "version": "0.2.0",
   "authors": [
     {
       "name": "Darshyne"
@@ -31,7 +31,7 @@
         "id": "dnd5e-combat",
         "type": "module",
         "compatibility": {
-          "minimum": "0.200.0"
+          "minimum": "0.201.0"
         }
       }
     ]

@@ -19,7 +19,7 @@ consumables and monster features.
   editable. Their rules are recognised by identifier on every sheet the item is placed on, PCs and NPCs alike, and
   editing a creation updates all of them at once, for every connected player.
 
-It **requires the [`dnd5e-combat`](https://github.com/Darshyne/dnd5e-combat) engine** (≥ 0.200.0), whose recipe
+It **requires the [`dnd5e-combat`](https://github.com/Darshyne/dnd5e-combat) engine** (≥ 0.201.0), whose recipe
 catalogue (`api.content.recipes`) defines the building blocks: what the engine cannot do, the creator cannot offer.
 The engine does not depend on this module and runs without it.
 
@@ -42,6 +42,12 @@ path). In-game scenario: `tools/scenarios/`, played with the engine's scenario r
 
 Early development. Planned next: automation packs (installable rule sets, including ones that automate premium content
 by identifier without shipping any of it).
+
+## Translations
+
+The module ships English and French; the building blocks' labels come from the engine's own language files. To add a
+language, copy `module/lang/en.json` to `module/lang/<code>.json`, translate the values, and add an entry to `languages` in
+`module/module.json`; missing keys fall back to English.
 
 ## License
 

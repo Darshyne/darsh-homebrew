@@ -22,7 +22,7 @@ export async function createPack() {
   });
   if ( !pack ) return null;
   await game.settings.set(MODULE_ID, PACK_SETTING, pack.collection);
-  log.info(`compendium ${pack.collection} ${existing ? "repris" : "créé"}`);
+  log.info(`compendium ${pack.collection} ${existing ? "reused" : "created"}`);
   return pack;
 }
 

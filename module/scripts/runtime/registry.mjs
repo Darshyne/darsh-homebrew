@@ -13,7 +13,7 @@ import * as engine from "../adapter/engine.mjs";
 export function currentTable() {
   if ( !engine.recipes() ) return {};
   const { table, errors } = compileTable(readStore(), engine.build, engine.validate);
-  if ( Object.keys(errors).length ) log.warn("créations écartées", errors);
+  if ( Object.keys(errors).length ) log.warn("creations rejected", errors);
   return table;
 }
 
@@ -25,5 +25,5 @@ export function registerRegistry() {
 /** Après une écriture : la table est reconstruite et enregistrée de nouveau. */
 export function refresh() {
   const result = engine.register(MODULE_ID, currentTable());
-  if ( result ) log.info(`${result.accepted.length} création(s) automatisée(s)`);
+  if ( result ) log.info(`${result.accepted.length} automated creation(s)`);
 }

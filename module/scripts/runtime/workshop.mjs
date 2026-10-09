@@ -28,7 +28,7 @@ export async function itemData({ sourceUuid=null, nature="spell", name, img="", 
   let data;
   if ( sourceUuid ) {
     const source = await fromUuid(sourceUuid);
-    if ( !source ) throw new Error(`modèle introuvable : ${sourceUuid}`);
+    if ( !source ) throw new Error(`template not found: ${sourceUuid}`);
     data = source.toObject();
     delete data._id;
     delete data.folder;
@@ -65,26 +65,30 @@ export async function createCreation({ sourceUuid=null, nature="spell", name, im
   const problems = identityProblems({ name, identifier, override });
   if ( problems.length ) throw new Error(problems.map(([k]) => k).join(", "));
   const pack = homebrewPack();
-  if ( !pack ) throw new Error("compendium Homebrew absent");
+  if ( !pack ) throw new Error("Homebrew compendium missing");
   // Sans base fournie, celle du modèle : son automatisation en vigueur (toutes couches).
   if ( base === undefined ) base = sourceUuid ? engine.entryOf(await fromUuid(sourceUuid)) : null;
   const item = await createItem(pack, await itemData({ sourceUuid, nature, name, img, identifier }));
-  if ( !item ) throw new Error("création de l'item refusée");
+  if ( !item ) throw new Error("item creation refused");
   await saveCreation(identifier, { uuid: item.uuid, name: item.name, recipes: [], base, keepBase, recipesVersion: engine.recipes().version });
   return item;
 }
 
-/** L'entrée que donneraient ces recettes, et ses erreurs (construction puis validation par le moteur). */
+/**
+ * L'entrée que donneraient ces recettes, et ses problèmes : `issues`, ceux de la construction (traduisibles, voir
+ * `api.content.recipes.build`) ; `invalid`, ceux de la validation du schéma par le moteur (en anglais, rares par des recettes) ;
+ * `problems`, tous en une liste de phrases anglaises.
+ */
 export function preview(identifier, { recipes=[], base=null, keepBase=true }) {
-  const { entry, errors } = engine.build(recipes, { identifier, base: keepBase ? base : null });
-  const problems = [...errors, ...((!errors.length && Object.keys(entry).length) ? engine.validate(entry) : [])];
-  return { entry, problems };
+  const { entry, errors, issues=[] } = engine.build(recipes, { identifier, base: keepBase ? base : null });
+  const invalid = (!errors.length && Object.keys(entry).length) ? engine.validate(entry) : [];
+  return { entry, issues, invalid, problems: [...errors, ...invalid] };
 }
 
 /** Enregistre l'automatisation d'une création existante ; refusé si elle a des erreurs. */
 export async function saveAutomation(identifier, { recipes=[], keepBase=null, name=null }={}) {
   const current = creationOf(identifier);
-  if ( !current ) throw new Error(`aucune création « ${identifier} »`);
+  if ( !current ) throw new Error(`no creation "${identifier}"`);
   const next = { ...current, recipes, keepBase: keepBase ?? current.keepBase, name: name ?? current.name, recipesVersion: engine.recipes().version };
   const { problems } = preview(identifier, next);
   if ( problems.length ) return { saved: false, problems };
