@@ -4,6 +4,10 @@
 
 **[Website](https://darshyne.github.io)** · **[Discord](https://discord.gg/PDSq8dYdTP)** (questions, bugs, ideas)
 
+> **Beta.** Darshyne's Automation Suite is still in beta: not every spell and feature is covered yet, and things may change
+> between versions. If something doesn't behave as it should, tell us on [Discord](https://discord.gg/PDSq8dYdTP) or
+> [open an issue](https://github.com/Darshyne/darsh-homebrew/issues).
+
 Part of **Darshyne's Automation Suite (DAS)**. A step-by-step **creator of automated items** for **Foundry VTT V14** and
 **dnd5e 6.x**, for GMs who don't write code: spells, class features, species traits, feats, weapons, equipment,
 consumables and monster features.
