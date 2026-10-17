@@ -2,7 +2,7 @@
   "id": "darsh-homebrew",
   "title": "DAS · Homebrew",
   "description": "Step-by-step creator of automated items for Darshyne's Automation Suite (DAS): spells, features, magic items and monster features, built from the dnd5e-combat engine's building blocks, without code.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "authors": [
     {
       "name": "Darshyne"
@@ -14,7 +14,7 @@
   "download": "https://github.com/Darshyne/darsh-homebrew/releases/latest/download/module.zip",
   "compatibility": {
     "minimum": "14",
-    "verified": "14.367"
+    "verified": "14.369"
   },
   "relationships": {
     "systems": [

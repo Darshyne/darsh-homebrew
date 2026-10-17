@@ -51,7 +51,7 @@ by identifier without shipping any of it).
 
 ## Translations
 
-The module ships English and French; the building blocks' labels come from the engine's own language files. To add a
+The module ships English, French and Brazilian Portuguese (pt-BR translation by Henrique, [@henriquebot](https://github.com/henriquebot)); the building blocks' labels come from the engine's own language files. To add a
 language, copy `module/lang/en.json` to `module/lang/<code>.json`, translate the values, and add an entry to `languages` in
 `module/module.json`; missing keys fall back to English.
 
