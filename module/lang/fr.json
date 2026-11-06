@@ -46,7 +46,7 @@
   "DHB.Etat.Conditions": "Conditions",
   "DHB.Fiche.Automatisation": "Automatisation (Homebrew)",
   "DHB.Identite.DejaAutomatise": "« {id} » est déjà automatisé par le moteur ou un autre module : cochez la case pour le remplacer dans ce monde.",
-  "DHB.Identite.DejaCree": "Une création porte déjà l'identifiant « {id} ».",
+  "DHB.Identite.DejaCree": "Une création porte déjà l'identifiant « {id} ». Pour réutiliser ce nom, supprimez-la d'abord (atelier, étape Automatisation).",
   "DHB.Identite.Identifiant": "Identifiant",
   "DHB.Identite.IdentifiantAide": "C'est par lui que le moteur reconnaît l'objet, sur toutes les fiches où il sera posé. Minuscules, chiffres et tirets.",
   "DHB.Identite.IdentifiantFaux": "L'identifiant ne contient que des minuscules, des chiffres et des tirets.",
@@ -179,5 +179,17 @@
   "DHB.Reglages.Paquets.Bouton": "Gérer les packs",
   "DHB.Reglages.Createur.Nom": "Créateur d'objets",
   "DHB.Reglages.Createur.Aide": "Créer un sort, une aptitude ou un objet automatisé, pas à pas.",
-  "DHB.Reglages.Createur.Bouton": "Créer"
+  "DHB.Reglages.Createur.Bouton": "Créer",
+  "DHB.Identite.Orphelin": "L'objet de l'ancienne création « {name} » n'existe plus : elle sera remplacée par celle-ci.",
+  "DHB.Nettoyage.Supprimee": "DAS · Homebrew : {n} création(s) retirée(s) avec leur objet ({names}).",
+  "DHB.Nettoyage.Orphelins": "DAS · Homebrew : {n} création(s) orpheline(s) retirée(s), leur objet n'existe plus ({names}).",
+  "DHB.Nettoyage.PackAbsent": "DAS · Homebrew : le compendium de {n} création(s) est introuvable ({names}). Leurs règles sont gardées tant qu'il manque.",
+  "DHB.Supprimer.Bouton": "Supprimer cette création",
+  "DHB.Supprimer.Titre": "Supprimer « {name} »",
+  "DHB.Supprimer.Confirmer": "Supprimer la création « {name} » ? Ses règles d'automatisation seront retirées et son identifiant redeviendra libre.",
+  "DHB.Supprimer.Copies": "Les copies déjà posées sur des fiches restent, mais sans automatisation.",
+  "DHB.Supprimer.Objet": "Supprimer aussi l'objet du compendium Homebrew",
+  "DHB.Supprimer.Annuler": "Annuler",
+  "DHB.Supprimer.Fait": "Création « {name} » supprimée ; son objet reste dans le compendium.",
+  "DHB.Supprimer.FaitObjet": "Création « {name} » et son objet supprimés."
 }

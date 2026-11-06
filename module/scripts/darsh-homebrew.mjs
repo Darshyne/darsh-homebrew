@@ -47,8 +47,12 @@ Hooks.once("setup", () => {
   catch(err) { console.error(err); }
 });
 
+// Un item du compendium Homebrew supprimé emporte sa création (issue #4) : le MJ actif retire ses règles.
+Hooks.on("deleteItem", item => workshop.onItemDeleted(item));
+
 Hooks.once("ready", () => {
-  install();
+  // Les créations dont l'item a disparu (supprimé avant cette version, ou pendant qu'aucun MJ n'était là) : retirées, et dit au MJ.
+  install().then(() => workshop.cleanOrphans()).catch(err => console.error(err));
   warnPackProblems(packProblems());
   game.modules.get(MODULE_ID).api = Object.freeze({
     /** Ouvre le créateur ; avec un identifiant, rouvre cette création. */
@@ -75,6 +79,19 @@ Hooks.once("ready", () => {
       automatiser: ({ identifier, recipes }) => workshop.saveAutomation(identifier, { recipes }),
       apercu: ({ identifier, recipes }) => workshop.preview(identifier, { recipes }),
       retirer: ({ identifier, deleteItem=false }) => workshop.removeCreation(identifier, { deleteItem }),
+      /** Retire les créations orphelines (comme au chargement) : `{ removed, unknown }`. */
+      nettoyer: ({ notify=true }={}) => workshop.cleanOrphans({ notify }),
+      /** Supprime un document (uuid) comme le ferait le MJ dans le compendium : le hook `deleteItem` fait le reste. */
+      supprimerDocument: async ({ uuid }) => {
+        const doc = await fromUuid(uuid);
+        if ( !doc ) return false;
+        await doc.delete();
+        return true;
+      },
+      /** Ce document (uuid) existe-t-il ? */
+      existe: async ({ uuid }) => !!(await fromUuid(uuid)),
+      /** Les problèmes et avis de l'étape Identité pour cet identifiant (clés de traduction). */
+      identite: ({ name, identifier }) => ({ problems: workshop.identityProblems({ name, identifier }), notices: workshop.identityNotices({ identifier }) }),
       /** Ce que le moteur applique à un item (uuid), couches comprises. */
       moteur: async ({ uuid }) => {
         const item = await fromUuid(uuid);

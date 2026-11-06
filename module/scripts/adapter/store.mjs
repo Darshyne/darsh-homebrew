@@ -35,6 +35,14 @@ export async function saveCreation(identifier, creation) {
   return game.settings.set(MODULE_ID, STORE_SETTING, withCreation(readStore(), identifier, creation));
 }
 
+/** Retire plusieurs créations en une seule écriture (un seul `onChange`, donc un seul enregistrement auprès du moteur). MJ seulement. */
+export async function removeCreations(identifiers) {
+  if ( !identifiers.length ) return;
+  let store = readStore();
+  for ( const id of identifiers ) store = withCreation(store, id, null);
+  return game.settings.set(MODULE_ID, STORE_SETTING, store);
+}
+
 /** Les packs importés dans ce monde. */
 export function readPacks() {
   return normalizePacksStore(game.settings.get(MODULE_ID, PACKS_SETTING));

@@ -13,11 +13,11 @@ import { MODULE_ID, loc, escape } from "../shared.mjs";
 import { suggestIdentifier, isIdentifier, defaultValues, defaultArg, parseFieldValue } from "../core/creations.mjs";
 import { creationOf } from "../adapter/store.mjs";
 import { homebrewPack, createPack } from "../adapter/compendium.mjs";
-import { NATURES, identityProblems, createCreation, preview, saveAutomation } from "../runtime/workshop.mjs";
+import { NATURES, identityProblems, identityNotices, createCreation, preview, saveAutomation, removeCreation } from "../runtime/workshop.mjs";
 import * as engine from "../adapter/engine.mjs";
 import { recipeBlock, catalogue, describeIssue } from "./automation-form.mjs";
 
-const { ApplicationV2 } = foundry.applications.api;
+const { ApplicationV2, DialogV2 } = foundry.applications.api;
 
 const STEPS = ["start", "nature", "identity", "native", "automation"];
 
@@ -45,6 +45,7 @@ export class Creator extends ApplicationV2 {
       addClause: Creator.#onAddClause,
       removeClause: Creator.#onRemoveClause,
       save: Creator.#onSave,
+      deleteCreation: Creator.#onDeleteCreation,
       recreatePack: Creator.#onRecreatePack
     }
   };
@@ -156,6 +157,7 @@ export class Creator extends ApplicationV2 {
         <input type="text" data-state="identifier" value="${escape(s.identifier)}">
         <p class="dhb-hint">${escape(loc("Identite.IdentifiantAide"))}</p></div>
       ${override}
+      ${identityNotices(s).map(([key, data]) => `<p class="dhb-warn"><i class="fa-solid fa-recycle"></i> ${escape(loc(key, data))}</p>`).join("")}
       ${problems.map(p => `<p class="dhb-error">${escape(p)}</p>`).join("")}
       ${pack}`;
   }
@@ -216,6 +218,8 @@ export class Creator extends ApplicationV2 {
       const disabled = this.#identityProblems().length || !homebrewPack() ? "disabled" : "";
       buttons.push(`<button type="button" data-action="createItem" ${disabled}><i class="fa-solid fa-wand-magic-sparkles"></i> ${escape(loc("Bouton.Creer"))}</button>`);
     }
+    // Une création rangée (rouverte, ou créée dans cette fenêtre) peut être supprimée (issue #4) ; le bouton se tient à gauche.
+    if ( (s.step === "automation") && creationOf(s.identifier) ) buttons.unshift(`<button type="button" class="dhb-danger" data-action="deleteCreation"><i class="fa-solid fa-trash"></i> ${escape(loc("Supprimer.Bouton"))}</button>`);
     if ( s.step === "automation" ) buttons.push(`<button type="button" data-action="save"><i class="fa-solid fa-floppy-disk"></i> ${escape(loc("Bouton.Enregistrer"))}</button>`);
     return `<footer class="dhb-footer">${buttons.join("")}</footer>`;
   }
@@ -373,6 +377,31 @@ export class Creator extends ApplicationV2 {
     const recipe = this.draft.recipes[Number(target.dataset.recipe)];
     recipe?.values?.[target.dataset.field]?.splice(Number(target.dataset.clause), 1);
     this.render();
+  }
+
+  /**
+   * Supprime la création, après confirmation (issue #4) : ses règles quittent le moteur, et son item le compendium si la case
+   * reste cochée. Les copies posées sur des fiches restent, sans automatisation.
+   */
+  static async #onDeleteCreation() {
+    const s = this.draft;
+    const creation = creationOf(s.identifier);
+    if ( !creation ) return;
+    const item = creation.uuid ? await fromUuid(creation.uuid) : null;
+    const box = item ? `<label class="dhb-check"><input type="checkbox" name="deleteItem" checked> ${escape(loc("Supprimer.Objet"))}</label>` : "";
+    const answer = await DialogV2.confirm({
+      window: { title: loc("Supprimer.Titre", { name: creation.name }), icon: "fa-solid fa-trash" },
+      content: `<p>${escape(loc("Supprimer.Confirmer", { name: creation.name }))}</p>
+        <p class="dhb-hint">${escape(loc("Supprimer.Copies"))}</p>${box}`,
+      yes: { label: loc("Supprimer.Bouton"), icon: "fa-solid fa-trash", callback: (ev, button) => ({ deleteItem: !!button.form?.elements.deleteItem?.checked }) },
+      no: { label: loc("Supprimer.Annuler") }
+    });
+    if ( !answer ) return;
+    await removeCreation(s.identifier, answer);
+    if ( answer.deleteItem ) ui.notifications.info(loc("Supprimer.FaitObjet", { name: creation.name }));
+    else ui.notifications.info(loc("Supprimer.Fait", { name: creation.name }));
+    this.draft.saved = true;
+    return this.close();
   }
 
   /** Enregistre la création ; refusé tant qu'elle a des erreurs (le moteur l'écarterait). */

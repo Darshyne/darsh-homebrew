@@ -46,7 +46,7 @@
   "DHB.Etat.Conditions": "Conditions",
   "DHB.Fiche.Automatisation": "Automation (Homebrew)",
   "DHB.Identite.DejaAutomatise": "\"{id}\" is already automated by the engine or another module: tick the box to replace it in this world.",
-  "DHB.Identite.DejaCree": "A creation already uses the identifier \"{id}\".",
+  "DHB.Identite.DejaCree": "A creation already uses the identifier \"{id}\". To reuse this name, delete it first (workshop, Automation step).",
   "DHB.Identite.Identifiant": "Identifier",
   "DHB.Identite.IdentifiantAide": "This is how the engine recognizes the item, on every sheet it is placed on. Lowercase letters, digits and dashes.",
   "DHB.Identite.IdentifiantFaux": "The identifier only contains lowercase letters, digits and dashes.",
@@ -179,5 +179,17 @@
   "DHB.Reglages.Paquets.Bouton": "Manage packs",
   "DHB.Reglages.Createur.Nom": "Item creator",
   "DHB.Reglages.Createur.Aide": "Create an automated spell, feature or item, step by step.",
-  "DHB.Reglages.Createur.Bouton": "Create"
+  "DHB.Reglages.Createur.Bouton": "Create",
+  "DHB.Identite.Orphelin": "The item of the former creation \"{name}\" no longer exists: it will be replaced by this one.",
+  "DHB.Nettoyage.Supprimee": "DAS · Homebrew: {n} creation(s) removed along with their item ({names}).",
+  "DHB.Nettoyage.Orphelins": "DAS · Homebrew: {n} orphan creation(s) removed, their item no longer exists ({names}).",
+  "DHB.Nettoyage.PackAbsent": "DAS · Homebrew: the compendium of {n} creation(s) cannot be found ({names}). Their rules are kept while it is missing.",
+  "DHB.Supprimer.Bouton": "Delete this creation",
+  "DHB.Supprimer.Titre": "Delete \"{name}\"",
+  "DHB.Supprimer.Confirmer": "Delete the creation \"{name}\"? Its automation rules will be removed and its identifier will be free again.",
+  "DHB.Supprimer.Copies": "Copies already placed on sheets stay, without automation.",
+  "DHB.Supprimer.Objet": "Also delete the item from the Homebrew compendium",
+  "DHB.Supprimer.Annuler": "Cancel",
+  "DHB.Supprimer.Fait": "Creation \"{name}\" deleted; its item stays in the compendium.",
+  "DHB.Supprimer.FaitObjet": "Creation \"{name}\" and its item deleted."
 }

@@ -43,3 +43,20 @@ export async function createItem(pack, data) {
   const [item] = await Item.implementation.createDocuments([data], { pack: pack.collection, keepId: false, keepEmbeddedIds: true });
   return item ?? null;
 }
+
+/**
+ * L'item de ce uuid existe-t-il ? Sans charger de document : l'index du compendium (chargé au démarrage) suffit.
+ * `null` quand le compendium n'existe pas (supprimé, ou module désactivé) : on ne peut rien en dire.
+ * `parseUuid` du cœur V14 (common/utils/helpers.mjs:1305).
+ * @returns {boolean|null}
+ */
+export function itemExists(uuid) {
+  const parsed = foundry.utils.parseUuid(uuid);
+  if ( !parsed?.id ) return false;
+  const { collection } = parsed;
+  if ( !collection ) return uuid.startsWith("Compendium.") ? null : false;
+  if ( collection instanceof foundry.documents.collections.CompendiumCollection ) {
+    return parsed.embedded?.length ? null : collection.index.has(parsed.id);
+  }
+  return !!fromUuidSync(uuid);
+}

@@ -124,3 +124,37 @@ export function compileTable(store, build, validate=() => []) {
   }
   return { table, errors };
 }
+
+/**
+ * Les créations dont l'item n'existe plus (issue #4). `exists(uuid)` : `true` (l'item est là), `false` (il n'y est plus), `null`
+ * (impossible à dire : son compendium manque). Une création sans uuid est orpheline. Les cas `null` ne sont jamais rangés parmi
+ * les orphelins : un compendium absent viderait sinon toutes les règles du monde d'un coup.
+ * @returns {{ orphans: string[], unknown: string[] }}
+ */
+export function orphansOf(store, exists) {
+  const orphans = [];
+  const unknown = [];
+  for ( const [id, c] of Object.entries(normalizeStore(store).entries) ) {
+    const found = c.uuid ? exists(c.uuid) : false;
+    if ( found === false ) orphans.push(id);
+    else if ( found !== true ) unknown.push(id);
+  }
+  return { orphans, unknown };
+}
+
+/** Les identifiants des créations dont l'item est exactement ce uuid (jamais une copie posée sur une fiche, qui a le sien). */
+export function creationsOfItem(store, uuid) {
+  if ( !uuid ) return [];
+  return Object.entries(normalizeStore(store).entries).filter(([, c]) => c.uuid === uuid).map(([id]) => id);
+}
+
+/**
+ * Où en est un identifiant parmi les créations : `free` (libre), `live` (pris par une création dont l'item existe — ou dont on ne
+ * peut rien dire), `orphan` (pris par une création dont l'item n'existe plus : elle peut être remplacée).
+ */
+export function identifierStatus(store, identifier, exists) {
+  const c = normalizeStore(store).entries[identifier];
+  if ( !c ) return "free";
+  const found = c.uuid ? exists(c.uuid) : false;
+  return found === false ? "orphan" : "live";
+}

@@ -2,10 +2,10 @@
  * Ce que fait l'atelier, hors de toute fenêtre : créer l'item d'une création, enregistrer son automatisation, la retirer.
  * Le créateur (apps/creator.mjs) et les fonctions de test (`api.mcp`) passent par ici.
  */
-import { MODULE_ID } from "../shared.mjs";
-import { isIdentifier } from "../core/creations.mjs";
-import { readStore, creationOf, saveCreation } from "../adapter/store.mjs";
-import { homebrewPack, createItem } from "../adapter/compendium.mjs";
+import { MODULE_ID, loc, log } from "../shared.mjs";
+import { isIdentifier, orphansOf, creationsOfItem, identifierStatus } from "../core/creations.mjs";
+import { readStore, creationOf, saveCreation, removeCreations } from "../adapter/store.mjs";
+import { homebrewPack, createItem, itemExists } from "../adapter/compendium.mjs";
 import * as engine from "../adapter/engine.mjs";
 
 /** Les natures proposées : type d'item dnd5e, et sous-type d'aptitude (`system.type.value`). */
@@ -52,9 +52,18 @@ export function identityProblems({ name, identifier, override=false }) {
   const out = [];
   if ( !String(name ?? "").trim() ) out.push(["Identite.NomRequis"]);
   if ( !isIdentifier(identifier) ) out.push(["Identite.IdentifiantFaux"]);
-  else if ( readStore().entries[identifier] ) out.push(["Identite.DejaCree", { id: identifier }]);
+  else if ( identifierStatus(readStore(), identifier, itemExists) === "live" ) out.push(["Identite.DejaCree", { id: identifier }]);
   else if ( engine.takenElsewhere(identifier, MODULE_ID) && !override ) out.push(["Identite.DejaAutomatise", { id: identifier }]);
   return out;
+}
+
+/**
+ * Ce qu'il faut savoir sans que cela bloque : l'identifiant est pris par une création dont l'item n'existe plus, qui sera
+ * remplacée (issue #4). Mêmes formes que `identityProblems`.
+ */
+export function identityNotices({ identifier }) {
+  if ( !isIdentifier(identifier) || (identifierStatus(readStore(), identifier, itemExists) !== "orphan") ) return [];
+  return [["Identite.Orphelin", { id: identifier, name: creationOf(identifier)?.name ?? identifier }]];
 }
 
 /**
@@ -96,11 +105,65 @@ export async function saveAutomation(identifier, { recipes=[], keepBase=null, na
   return { saved: true, problems: [] };
 }
 
-/** Retire une création ; son item reste dans le compendium (supprimé à part, s'il le faut). */
+/**
+ * Retire une création ; son item reste dans le compendium, sauf avec `deleteItem`. La création est retirée **avant** l'item : la
+ * suppression de l'item n'a alors plus rien à nettoyer (voir `onItemDeleted`).
+ */
 export async function removeCreation(identifier, { deleteItem=false }={}) {
   const current = creationOf(identifier);
   if ( !current ) return false;
-  if ( deleteItem && current.uuid ) await (await fromUuid(current.uuid))?.delete();
   await saveCreation(identifier, null);
+  if ( deleteItem && current.uuid ) await (await fromUuid(current.uuid))?.delete();
   return true;
+}
+
+/** Les uuid d'items supprimés en attente de nettoyage, et l'écriture en cours (les suppressions sont traitées l'une après l'autre). */
+const deleted = new Set();
+let cleaning = Promise.resolve([]);
+
+/**
+ * Un item vient d'être supprimé (hook `deleteItem`, sur tous les clients) : le MJ actif retire la création dont c'était l'item
+ * (issue #4). Comparé par uuid exact : une copie posée sur une fiche porte le même identifiant mais pas le même uuid.
+ * Supprimer un dossier du compendium appelle le hook une fois par item : les uuid sont réunis puis retirés en **une** écriture
+ * (deux écritures en parallèle du même réglage perdraient l'une des deux).
+ * @returns {Promise<string[]>}  les noms des créations retirées
+ */
+export function onItemDeleted(item) {
+  if ( !game.user.isActiveGM || !item?.pack ) return Promise.resolve([]);
+  deleted.add(item.uuid);
+  cleaning = cleaning.then(async () => {
+    if ( !deleted.size ) return [];
+    const store = readStore();
+    const ids = [...deleted].flatMap(uuid => creationsOfItem(store, uuid));
+    deleted.clear();
+    if ( !ids.length ) return [];
+    const names = ids.map(id => store.entries[id].name);
+    await removeCreations(ids);
+    log.info(`creation(s) removed with their item: ${ids.join(", ")}`);
+    ui.notifications.info(loc("Nettoyage.Supprimee", { n: names.length, names: names.join(", ") }));
+    return names;
+  }).catch(err => { log.error(err); return []; });
+  return cleaning;
+}
+
+/**
+ * Retire les créations dont l'item n'existe plus (MJ actif, au chargement ; issue #4). Celles dont le compendium manque sont
+ * gardées et signalées. `notify` : dire au MJ ce qui a été fait.
+ * @returns {Promise<{ removed: string[], unknown: string[] }>}  les identifiants
+ */
+export async function cleanOrphans({ notify=true }={}) {
+  if ( !game.user.isActiveGM ) return { removed: [], unknown: [] };
+  const store = readStore();
+  const { orphans, unknown } = orphansOf(store, itemExists);
+  const names = ids => ids.map(id => store.entries[id].name).join(", ");
+  if ( orphans.length ) {
+    await removeCreations(orphans);
+    log.info(`orphan creation(s) removed: ${orphans.join(", ")}`);
+    if ( notify ) ui.notifications.info(loc("Nettoyage.Orphelins", { n: orphans.length, names: names(orphans) }));
+  }
+  if ( unknown.length ) {
+    log.warn(`creation(s) whose compendium is missing, kept: ${unknown.join(", ")}`);
+    if ( notify ) ui.notifications.warn(loc("Nettoyage.PackAbsent", { n: unknown.length, names: names(unknown) }));
+  }
+  return { removed: orphans, unknown };
 }

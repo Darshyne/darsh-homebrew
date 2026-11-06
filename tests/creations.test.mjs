@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeStore, withCreation, suggestIdentifier, isIdentifier, fieldVisible, defaultValues, defaultArg, parseFieldValue, compileTable } from "../module/scripts/core/creations.mjs";
+import { normalizeStore, withCreation, suggestIdentifier, isIdentifier, fieldVisible, defaultValues, defaultArg, parseFieldValue, compileTable, orphansOf, creationsOfItem, identifierStatus } from "../module/scripts/core/creations.mjs";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 
@@ -87,5 +87,34 @@ describe("table de contenu", () => {
     expect(keep.table.a).toEqual(base);
     const drop = compileTable({ v: 1, entries: { a: { base, keepBase: false, recipes: [] } } }, buildEntry, validate);
     expect(drop.table).toEqual({});
+  });
+});
+
+describe("créations orphelines (issue #4)", () => {
+  const store = { v: 1, entries: {
+    vivante: { uuid: "Compendium.world.hb.Item.a" },
+    effacee: { uuid: "Compendium.world.hb.Item.b" },
+    "sans-uuid": { uuid: null },
+    "pack-absent": { uuid: "Compendium.world.parti.Item.c" }
+  } };
+  const exists = uuid => ({ "Compendium.world.hb.Item.a": true, "Compendium.world.hb.Item.b": false })[uuid] ?? null;
+
+  it("l'item disparu ou sans uuid est orphelin ; un compendium absent ne l'est pas", () => {
+    expect(orphansOf(store, exists)).toEqual({ orphans: ["effacee", "sans-uuid"], unknown: ["pack-absent"] });
+    expect(orphansOf({}, exists)).toEqual({ orphans: [], unknown: [] });
+  });
+
+  it("retrouve la création par l'uuid exact de son item", () => {
+    expect(creationsOfItem(store, "Compendium.world.hb.Item.b")).toEqual(["effacee"]);
+    expect(creationsOfItem(store, "Actor.x.Item.b")).toEqual([]);
+    expect(creationsOfItem(store, null)).toEqual([]);
+  });
+
+  it("un nom pris par un orphelin peut être remplacé, pas un nom pris par une création vivante", () => {
+    expect(identifierStatus(store, "nouvelle", exists)).toBe("free");
+    expect(identifierStatus(store, "vivante", exists)).toBe("live");
+    expect(identifierStatus(store, "effacee", exists)).toBe("orphan");
+    expect(identifierStatus(store, "sans-uuid", exists)).toBe("orphan");
+    expect(identifierStatus(store, "pack-absent", exists)).toBe("live");
   });
 });
