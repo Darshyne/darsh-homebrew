@@ -1,0 +1,25 @@
+{
+  "i18n": {
+    "namespaces": ["DHB"],
+    "calls": [{ "fn": "loc", "prefix": "DHB." }],
+    "patterns": [{ "pattern": "\"(Paquet\\.[A-Za-z.]+)\"", "keys": ["DHB.$1"] }],
+    "lists": [
+      { "prefix": "DHB.Etape", "values": ["start", "nature", "identity", "native", "automation"] },
+      { "prefix": "DHB.Nature", "values": ["spell", "classFeature", "speciesTrait", "feat", "monsterFeature", "weapon", "equipment", "consumable"] },
+      { "prefix": "DHB.Automatisation", "values": ["Valide", "Vide"] },
+      { "prefix": "DHB.Paquet.Erreur", "file": "core/packs.mjs", "export": "ISSUE_CODES" },
+      { "prefix": "DHB.Paquet.Etat", "file": "core/packs.mjs", "export": "STATUS_CODES" },
+      { "prefix": "DHB.Paquet.Statut", "values": ["on", "off", "blocked"] },
+      { "prefix": "DHB.Paquet.Decision", "values": ["new", "update", "same", "downgrade"] }
+    ],
+    "minKeys": 120
+  },
+  "layers": {
+    "imports": {
+      "core": [".", "adapter", "apps", "runtime"],
+      "adapter": ["apps", "runtime"],
+      "runtime": ["apps"]
+    },
+    "pure": { "folders": ["core"] }
+  }
+}
