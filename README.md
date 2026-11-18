@@ -84,7 +84,7 @@ Early development. Planned next: exporting a pack as a ready-to-publish module (
 
 ## Translations
 
-The module ships English, French and Brazilian Portuguese (pt-BR translation by Henrique, [@henriquebot](https://github.com/henriquebot)); the building blocks' labels come from the engine's own language files. To add a
+The module ships English, French, Brazilian Portuguese (pt-BR translation by Henrique, [@henriquebot](https://github.com/henriquebot)) and Italian; the building blocks' labels come from the engine's own language files. To add a
 language, copy `module/lang/en.json` to `module/lang/<code>.json`, translate the values, and add an entry to `languages` in
 `module/module.json`; missing keys fall back to English.
 
