@@ -168,7 +168,13 @@ export function readPack(raw, { validate, validateSources=localSourceErrors }) {
   else {
     if ( !Object.keys(p.rules).length ) errors.push(issue("RulesEmpty"));
     for ( const [id, entry] of Object.entries(p.rules) ) {
-      if ( !isIdentifier(id) ) { ruleErrors[id] = [`"${id}": kebab-case identifier expected`]; continue; }
+      // Pas d'affectation simple : sous la clé « __proto__ » (clé propre après JSON.parse), elle changerait le prototype du
+      // relevé au lieu d'y inscrire l'erreur, et la règle serait écartée sans que l'import soit refusé.
+      if ( !isIdentifier(id) ) {
+        const value = [`"${id}": kebab-case identifier expected`];
+        Object.defineProperty(ruleErrors, id, { value, enumerable: true, writable: true, configurable: true });
+        continue;
+      }
       const errs = isObject(entry) ? validate(entry) : ["the entry is an object"];
       if ( errs.length ) ruleErrors[id] = errs;
       rules[id] = entry;

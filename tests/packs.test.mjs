@@ -194,6 +194,17 @@ describe("résumé d'import", () => {
     expect(Object.keys(sum.ruleErrors)).toEqual(["faux-essai"]);
   });
 
+  it("une règle rangée sous la clé « __proto__ » est refusée comme tout identifiant faux, pas écartée en silence", () => {
+    // Seul `JSON.parse` fait de « __proto__ » une clé propre : c'est ainsi qu'arrive un fichier de pack.
+    const rules = JSON.parse('{"poing-d-essai":{"teleport":{"distance":30,"units":"ft"}},"__proto__":{"cleInconnue":true}}');
+    const raw = pack({ rules });
+    const sum = summarizeImport(raw, { engine, store: {}, env: env() });
+    expect(Object.keys(sum.ruleErrors)).toEqual(["__proto__"]);
+    expect(sum.canImport).toBe(false);
+    expect(Object.keys(sum.pack.rules)).toEqual(["poing-d-essai"]);
+    expect(Object.getPrototypeOf(sum.ruleErrors)).toBe(Object.prototype);
+  });
+
   it("une mise à jour se voit, et ne se dit pas en conflit avec sa propre version précédente", () => {
     const store = withPack({}, readPack(pack(), engine).pack);
     const sum = summarizeImport(pack({ version: "1.1.0" }), { engine, store, env: env() });
