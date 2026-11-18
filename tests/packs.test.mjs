@@ -5,10 +5,10 @@ import {
 } from "../module/scripts/core/packs.mjs";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
+import { CORE } from "./das-core.mjs";
 
 // Le validateur du moteur (voir tests/creations.test.mjs). `validateSources` n'existe que depuis le §277 du moteur : à défaut, le
 // contrôle local de l'atelier.
-const CORE = process.env.DAS_CORE ?? resolve(import.meta.dirname, "../../Foundry dnd5e moteur de combat");
 const { validateEntry, validateSources } = await import(pathToFileURL(resolve(CORE, "module/scripts/core/content.mjs")).href);
 const facts = new Proxy({}, { has: () => true, get: () => true });
 const engine = { validate: entry => validateEntry(entry, { facts }), ...(validateSources ? { validateSources } : {}) };

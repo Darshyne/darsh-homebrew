@@ -2,10 +2,10 @@ import { describe, it, expect } from "vitest";
 import { normalizeStore, withCreation, suggestIdentifier, isIdentifier, fieldVisible, defaultValues, defaultArg, parseFieldValue, compileTable, orphansOf, creationsOfItem, identifierStatus } from "../module/scripts/core/creations.mjs";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
+import { CORE } from "./das-core.mjs";
 
 // Le catalogue du moteur : les tests de l'atelier suivent ses recettes réelles. DAS_CORE désigne un clone de `dnd5e-combat`
-// (la CI le récupère dans `core/`) ; sur un poste, le dépôt voisin.
-const CORE = process.env.DAS_CORE ?? resolve(import.meta.dirname, "../../Foundry dnd5e moteur de combat");
+// (la CI le récupère dans `core/`) ; sur un poste, le dépôt voisin (tests/das-core.mjs).
 const core = file => import(pathToFileURL(resolve(CORE, "module/scripts/core", file)).href);
 const { RECIPES, buildEntry } = await core("recipes.mjs");
 const { validateEntry } = await core("content.mjs");
